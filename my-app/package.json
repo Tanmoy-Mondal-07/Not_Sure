@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "mongoos": "^0.0.1-security",
+    "mongoose": "^8.18.2",
     "next": "15.5.4",
     "next-auth": "^4.24.11",
     "react": "19.1.0",
