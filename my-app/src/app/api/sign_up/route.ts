@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
+import bcrypt from "bcryptjs"
 
 
 export async function POST(request: Request) {
@@ -29,7 +30,13 @@ export async function POST(request: Request) {
                     message: "user with email id alredy exist"
                 }, { status: 400 })
             } else {
+                const hashedPassword = await bcrypt.hash(password, 10)
 
+                findUserByEmail.password = hashedPassword
+                findUserByEmail.verifyCode = verifyCode
+                findUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)
+
+                findUserByEmail.save()
             }
         }
 
