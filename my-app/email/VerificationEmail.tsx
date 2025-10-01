@@ -40,8 +40,8 @@ export default function VerificationEmail({ username, otp }: VerificationEmailPr
 
                     <Row>
                         <Text>
-                            We noticed you may not have received or used your previous code, so we’re resending
-                            it. Please use the verification code below to complete your registration:
+                            Thank you for registering. Please use the following verification
+                            code to complete your registration:
                         </Text>
                     </Row>
 
