@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/dbConnect";
+import UserModel from "@/model/User";
 
 
 export async function POST(request: Request) {
@@ -6,10 +7,46 @@ export async function POST(request: Request) {
 
     try {
         const { username, code } = await request.json()
-        
-        const decodedUsername = 
+
+        const decodedUsername = decodeURIComponent(username)
+
+        const user = await UserModel.findOne({ username: decodedUsername })
+
+        if (!user) {
+            return Response.json({
+                success: false,
+                message: "User not found"
+            }, { status: 500 })
+        }
+
+        const isCodevalid = user.verifyCode === code
+        const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date()
+
+        if (isCodevalid && isCodeNotExpired) {
+            user.isVerified = true
+            await user.save()
+
+            return Response.json({
+                success: false,
+                message: "User not found"
+            }, { status: 200 })
+        } else if (!isCodeNotExpired) {
+            return Response.json({
+                success: false,
+                message: "Expaired Otp, please signup again to get a new code"
+            }, { status: 400 })
+        } else {
+            return Response.json({
+                success: false,
+                message: "Incrroct otp"
+            }, { status: 400 })
+        }
 
     } catch (error) {
-
+        console.log("Error while verifing user :: ", error);
+        return Response.json({
+            success: false,
+            message: "Error while verifing user"
+        }, { status: 500 })
     }
 }
