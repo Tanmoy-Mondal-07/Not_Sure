@@ -6,24 +6,25 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema } from "@/schema/signUpSchema"
 import { Button } from "@/components/ui/button"
-import { Github } from "lucide-react"
+import { Github, Loader2 } from "lucide-react"
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
+    Form, FormControl, FormDescription, FormField,
+    FormItem, FormLabel,
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import axios from 'axios'
+import { ApiResponse } from "@/types/ApiResponse"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 function SignupPage() {
     const [username, setUsername] = useState('');
     const [usernameMessage, setUsernameMessage] = useState('');
     const [isCheckingUsername, setIsCheckingUsername] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter()
 
     const form = useForm<z.infer<typeof signUpSchema>>({
         resolver: zodResolver(signUpSchema),
@@ -36,6 +37,21 @@ function SignupPage() {
 
     async function onSubmit(data: z.infer<typeof signUpSchema>) {
         setIsSubmitting(true)
+        try {
+            const response = await axios.post<ApiResponse>('api/sign_up', data)
+
+            toast.success("Account created", {
+                description: "Please verify your email to continue.",
+            });
+
+            router.replace(`/verify/${data.username}`);
+        } catch (error) {
+            toast.error("Signup failed", {
+                description: "Something went wrong. Please try again later.",
+            });
+        } finally {
+            setIsSubmitting(false)
+        }
 
     }
 
@@ -109,11 +125,15 @@ function SignupPage() {
                                 )}
                             />
 
-                            <Button
-                                type="submit"
-                                className="w-full font-medium shadow-md"
-                            >
-                                Sign Up
+                            <Button type="submit" className="w-full font-medium shadow-md" disabled={isSubmitting}>
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Please wait
+                                    </>
+                                ) : (
+                                    'Sign Up'
+                                )}
                             </Button>
 
                             <div className="relative">
