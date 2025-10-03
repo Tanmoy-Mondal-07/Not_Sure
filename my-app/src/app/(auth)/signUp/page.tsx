@@ -1,11 +1,12 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema } from "@/schema/signUpSchema"
 import { Button } from "@/components/ui/button"
+import { Github } from "lucide-react"
 import {
     Form,
     FormControl,
@@ -19,6 +20,11 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 function SignupPage() {
+    const [username, setUsername] = useState('');
+    const [usernameMessage, setUsernameMessage] = useState('');
+    const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const form = useForm<z.infer<typeof signUpSchema>>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
@@ -28,8 +34,9 @@ function SignupPage() {
         },
     })
 
-    async function onSubmit(values: z.infer<typeof signUpSchema>) {
-        console.log("Form submitted:", values)
+    async function onSubmit(data: z.infer<typeof signUpSchema>) {
+        setIsSubmitting(true)
+
     }
 
     return (
@@ -104,9 +111,22 @@ function SignupPage() {
 
                             <Button
                                 type="submit"
-                                className="w-full rounded-xl text-white font-medium shadow-md"
+                                className="w-full font-medium shadow-md"
                             >
                                 Sign Up
+                            </Button>
+
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-border" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-card px-3 text-muted-foreground font-medium">Or</span>
+                                </div>
+                            </div>
+
+                            <Button variant="outline" className="w-full shadow-md">
+                                <Github /> Continue with GitHub
                             </Button>
 
                             <p className="text-center text-sm text-gray-600 mt-4">
