@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SidebarProvider>
+        <SidebarProvider >
           <div className="flex min-h-screen w-full">
             <AppSidebar />
 

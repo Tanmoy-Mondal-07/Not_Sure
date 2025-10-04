@@ -15,7 +15,7 @@ import {
 const items = [
     {
         title: "Home",
-        url: "#",
+        url: "home",
         icon: Home,
     },
     {
@@ -42,7 +42,7 @@ const items = [
 
 export default function AppSidebar() {
     return (
-        <Sidebar>
+        <Sidebar variant="floating">
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
