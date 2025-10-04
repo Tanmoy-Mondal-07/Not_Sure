@@ -30,16 +30,21 @@ export async function POST(request: Request) {
                 success: false,
                 message: "User not found"
             }, { status: 200 })
+
         } else if (!isCodeNotExpired) {
+
             return Response.json({
                 success: false,
                 message: "Expaired Otp, please signup again to get a new code"
             }, { status: 400 })
+
         } else {
+
             return Response.json({
                 success: false,
                 message: "Incrroct otp"
             }, { status: 400 })
+
         }
 
     } catch (error) {
