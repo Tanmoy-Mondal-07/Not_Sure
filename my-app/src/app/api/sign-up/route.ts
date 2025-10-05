@@ -33,6 +33,7 @@ export async function POST(request: Request) {
             } else {
                 const hashedPassword = await bcrypt.hash(password, 10)
 
+                findUserByEmail.username = username
                 findUserByEmail.password = hashedPassword
                 findUserByEmail.verifyCode = verifyCode
                 findUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)

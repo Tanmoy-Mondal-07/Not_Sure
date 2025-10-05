@@ -8,7 +8,10 @@ export async function POST(request: Request) {
     try {
         const { username, code } = await request.json()
 
+        // if (!username || !code) console.log("fild missing");
+
         const decodedUsername = decodeURIComponent(username)
+        // console.log(decodedUsername);
 
         const user = await UserModel.findOne({ username: decodedUsername })
 
@@ -27,8 +30,8 @@ export async function POST(request: Request) {
             await user.save()
 
             return Response.json({
-                success: false,
-                message: "User not found"
+                success: true,
+                message: "Verified"
             }, { status: 200 })
 
         } else if (!isCodeNotExpired) {

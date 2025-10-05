@@ -38,12 +38,19 @@ function SignupPage() {
     async function onSubmit(data: z.infer<typeof signUpSchema>) {
         setIsSubmitting(true)
         try {
-            const response = await axios.post<ApiResponse>('api/sign_up', data)
+            const response = await axios.post<ApiResponse>('/api/sign-up', data)
 
-            toast.success("Account created", {
-                description: "Please verify your email to continue.",
-            });
+            if (response.data.success) {
 
+                toast.success("Account created", {
+                    description: "Please verify your email to continue.",
+                });
+
+            } else {
+                toast.error("Faild to create account", {
+                    description: response.data.message,
+                })
+            }
             router.replace(`/verify/${data.username}`);
         } catch (error) {
             toast.error("Signup failed", {

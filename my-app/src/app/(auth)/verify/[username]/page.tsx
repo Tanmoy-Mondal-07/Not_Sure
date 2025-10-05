@@ -11,10 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import z from "zod"
 import { useParams } from "next/navigation"
 import axios, { AxiosError } from "axios"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { ApiResponse } from "@/types/ApiResponse"
+import { useState } from "react"
+import { Loader2 } from "lucide-react"
 
 export default function InputOTPForm() {
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const prams = useParams<{ username: string }>()
     const router = useRouter()
 
@@ -26,8 +30,9 @@ export default function InputOTPForm() {
     })
 
     async function onSubmit(data: z.infer<typeof OtpSchema>) {
+        setIsLoading(true)
         try {
-            const response = await axios.post('/api/verify_user', {
+            const response = await axios.post(`/api/verify-user`, {
                 username: prams.username,
                 code: data.pin
             })
@@ -35,6 +40,7 @@ export default function InputOTPForm() {
             toast("Success", {
                 description: response.data.message,
             })
+            // console.log("verified ddddddddddd");
             router.replace('sign-in')
         } catch (error) {
             console.log("error in verifing otp user");
@@ -42,8 +48,11 @@ export default function InputOTPForm() {
             let errorMassage = axiosError.response?.data.message
 
             toast.error("sign up faild", {
-                description: errorMassage,
+                description: errorMassage
+
             })
+        } finally {
+            setIsLoading(false)
         }
 
         // toast("You submitted the following values", {
@@ -85,14 +94,24 @@ export default function InputOTPForm() {
                                             </InputOTP>
                                         </FormControl>
                                         <FormDescription>
-                                            Please enter the one-time password sent to your phone.
+                                            Please enter the one-time password sent to your email.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            <Button type="submit">Submit</Button>
+                            <Button disabled={isLoading} type="submit">
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Verifing...
+                                    </>
+                                ) : (
+                                    'Verify'
+                                )}
+                            </Button>
+
                         </form>
                     </Form>
                 </CardContent>
