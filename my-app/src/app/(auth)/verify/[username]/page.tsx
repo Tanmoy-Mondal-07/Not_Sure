@@ -3,35 +3,56 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { z } from "zod"
-
+import { OtpSchema } from "@/schema/otpSchema"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-const FormSchema = z.object({
-    pin: z.string().min(6, {
-        message: "Your one-time password must be 6 characters.",
-    }),
-})
+import z from "zod"
+import { useParams } from "next/navigation"
+import axios, { AxiosError } from "axios"
+import { useRouter } from "next/router"
+import { ApiResponse } from "@/types/ApiResponse"
 
 export default function InputOTPForm() {
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const prams = useParams<{ username: string }>()
+    const router = useRouter()
+
+    const form = useForm<z.infer<typeof OtpSchema>>({
+        resolver: zodResolver(OtpSchema),
         defaultValues: {
             pin: "",
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-        toast("You submitted the following values", {
-            description: (
-                <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        })
+    async function onSubmit(data: z.infer<typeof OtpSchema>) {
+        try {
+            const response = await axios.post('/api/verify_user', {
+                username: prams.username,
+                code: data.pin
+            })
+
+            toast("Success", {
+                description: response.data.message,
+            })
+            router.replace('sign-in')
+        } catch (error) {
+            console.log("error in verifing otp user");
+            const axiosError = error as AxiosError<ApiResponse>;
+            let errorMassage = axiosError.response?.data.message
+
+            toast.error("sign up faild", {
+                description: errorMassage,
+            })
+        }
+
+        // toast("You submitted the following values", {
+        //     description: (
+        //         <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
+        //             <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        //         </pre>
+        //     ),
+        // })
     }
 
     return (
