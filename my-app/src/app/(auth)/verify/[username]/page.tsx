@@ -47,7 +47,7 @@ export default function InputOTPForm() {
             const axiosError = error as AxiosError<ApiResponse>;
             let errorMassage = axiosError.response?.data.message
 
-            toast.error("sign up faild", {
+            toast.error("SignUp faild", {
                 description: errorMassage
 
             })
@@ -67,12 +67,15 @@ export default function InputOTPForm() {
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <Card className="w-full max-w-md shadow-2xl rounded-2xl">
-                <CardHeader>
+                <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold text-center text-gray-800">
                         Verify Your Account
                     </CardTitle>
+                    <p className="text-sm text-gray-500">
+                        Enter the 6-digit code we sent to your email
+                    </p>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="w-full flex flex-col items-start">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
                             <FormField
@@ -93,9 +96,18 @@ export default function InputOTPForm() {
                                                 </InputOTPGroup>
                                             </InputOTP>
                                         </FormControl>
-                                        <FormDescription>
-                                            Please enter the one-time password sent to your email.
+
+                                        <FormDescription className="text-gray-500 mt-2 items-center">
+                                            Didn’t receive the code?{" "}
+                                            <button
+                                                type="button"
+                                                className="text-indigo-600 font-medium hover:underline"
+                                            // onClick={handleResend}
+                                            >
+                                                Resend
+                                            </button>
                                         </FormDescription>
+
                                         <FormMessage />
                                     </FormItem>
                                 )}
