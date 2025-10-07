@@ -4,70 +4,69 @@ import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signUpSchema } from "@/schema/signUpSchema"
+import { signInSchema } from "@/schema/signInSchema"
 import { Button } from "@/components/ui/button"
 import { Github, Loader2 } from "lucide-react"
 import {
-    Form, FormControl, FormDescription, FormField,
-    FormItem, FormLabel,
-    FormMessage,
+    Form, FormControl,
+    FormField, FormItem,
+    FormLabel, FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import axios from 'axios'
-import { ApiResponse } from "@/types/ApiResponse"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { signIn } from 'next-auth/react';
 
 function SignupPage() {
-    const [username, setUsername] = useState('');
-    const [usernameMessage, setUsernameMessage] = useState('');
-    const [isCheckingUsername, setIsCheckingUsername] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter()
 
-    const form = useForm<z.infer<typeof signUpSchema>>({
-        resolver: zodResolver(signUpSchema),
+    const form = useForm<z.infer<typeof signInSchema>>({
+        resolver: zodResolver(signInSchema),
         defaultValues: {
-            username: "",
-            email: "",
+            identifier: "",
             password: "",
         },
     })
 
-    async function onSubmit(data: z.infer<typeof signUpSchema>) {
+    async function onSubmit(data: z.infer<typeof signInSchema>) {
         setIsSubmitting(true)
         try {
-            const response = await axios.post<ApiResponse>('/api/sign-up', data)
-
-            if (response.data.success) {
-
-                toast.success("Account created", {
-                    description: "Please verify your email to continue.",
-                });
-
-            } else {
-                toast.error("Faild to create account", {
-                    description: response.data.message,
-                })
-            }
-            router.replace(`/verify/${data.username}`);
-        } catch (error) {
-            toast.error("Signup failed", {
-                description: "Something went wrong. Please try again later.",
+            const result = await signIn('credentials', {
+                redirect: false,
+                identifier: data.identifier,
+                password: data.password,
             });
+
+            if (result?.error) {
+                if (result.error === 'CredentialsSignin') {
+                    toast.error("Login Failed", {
+                        description: 'Incorrect username or password',
+                    })
+
+                } else {
+                    toast.error("Error", {
+                        description: result.error,
+                    })
+                }
+            }
+
+            if (result?.url) {
+                // router.replace('/dashboard');
+            }
+            // console.log(result);
         } finally {
             setIsSubmitting(false)
         }
-
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 sm:pt-15">
+        <div className="min-h-screen flex items-center justify-center p-4 pt-15">
             <Card className="w-full max-w-md shadow-2xl rounded-2xl">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold text-center text-gray-800">
-                        Create an Account
+                        Welcome Back
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -76,28 +75,11 @@ function SignupPage() {
                             onSubmit={form.handleSubmit(onSubmit)}
                             className="space-y-6"
                         >
-                            {/* Username */}
-                            <FormField
-                                control={form.control}
-                                name="username"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Username</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Name" {...field} />
-                                        </FormControl>
-                                        {/* <FormDescription>
-                                            This will be your public display name.
-                                        </FormDescription> */}
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
 
                             {/* Email */}
                             <FormField
                                 control={form.control}
-                                name="email"
+                                name="identifier"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
@@ -139,7 +121,7 @@ function SignupPage() {
                                         Please wait
                                     </>
                                 ) : (
-                                    'Sign Up'
+                                    'Sign In'
                                 )}
                             </Button>
 
@@ -157,12 +139,12 @@ function SignupPage() {
                             </Button>
 
                             <p className="text-center text-sm text-gray-600 mt-4">
-                                Already have an account?{" "}
+                                Don't have an account?{" "}
                                 <a
-                                    href="/sign-in"
+                                    href="/signUp"
                                     className="font-medium text-indigo-600 hover:text-indigo-700 transition"
                                 >
-                                    Login
+                                    SignUp
                                 </a>
                             </p>
                         </form>

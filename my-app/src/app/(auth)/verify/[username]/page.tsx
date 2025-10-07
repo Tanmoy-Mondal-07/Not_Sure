@@ -65,7 +65,7 @@ export default function InputOTPForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="min-h-screen flex items-center justify-center p-4 sm:pt-15">
             <Card className="w-full max-w-md shadow-2xl rounded-2xl">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold text-center text-gray-800">

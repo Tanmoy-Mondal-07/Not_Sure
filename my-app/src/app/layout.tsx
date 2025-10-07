@@ -30,12 +30,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SidebarProvider >
-          
 
           <div className="flex min-h-screen w-full">
             <AppSidebar />
             <main className="flex-1">
-              <Navbar/>
+              <Navbar />
               {/* <SidebarTrigger /> */}
               {children}
               <Toaster richColors />
