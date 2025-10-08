@@ -134,7 +134,7 @@ function SignupPage() {
                                 </div>
                             </div>
 
-                            <Button variant="outline" className="w-full shadow-md">
+                            <Button onClick={() => signIn("github")} variant="outline" className="w-full shadow-md">
                                 <Github /> Continue with GitHub
                             </Button>
 

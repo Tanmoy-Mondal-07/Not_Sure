@@ -3,10 +3,16 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
+import GitHubProvider from "next-auth/providers/github";
 
 
 export const authOptions: NextAuthOptions = {
     providers: [
+        GitHubProvider({
+            clientId: process.env.GITHUB_ID!,
+            clientSecret: process.env.GITHUB_SECRET!,
+        }),
+
         CredentialsProvider({
             id: "credentials",
             name: "Credentials",
@@ -45,11 +51,16 @@ export const authOptions: NextAuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt(args) {
+            console.log("🔹 JWT Callback Triggered ---------------------");
+            console.dir(args, { depth: null }); 
+            console.log("------------------------------------------------");
+
+            const { token, user } = args
+
             if (user) {
                 token._id = user._id?.toString()
                 token.isVerified = user.isVerified
-                token.isAcceptingMessages = user.isAcceptingMessages
                 token.username = user.username
             }
             return token
@@ -58,7 +69,6 @@ export const authOptions: NextAuthOptions = {
             if (token) {
                 session.user._id = token._id?.toString()
                 session.user.isVerified = token.isVerified
-                session.user.isAcceptingMessages = token.isAcceptingMessages
                 session.user.username = token.username
             }
             return session
