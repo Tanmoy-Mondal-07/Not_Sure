@@ -53,7 +53,7 @@ function SignupPage() {
             }
 
             if (result?.url) {
-                // router.replace('/dashboard');
+                router.replace('/dashboard');
             }
             // console.log(result);
         } finally {

@@ -4,8 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Navbar() {
+    const { data: session } = useSession();
     const pathname = usePathname();
 
     const links = [
@@ -37,9 +39,12 @@ export default function Navbar() {
                     </div>
 
                     <div className="hidden md:block">
-                        <Button variant="default" >
-                            Login
-                        </Button>
+                        {!session ? <Button variant="default" >
+                            <Link href="/sign-in">SignIn</Link>
+                        </Button> :
+                            <Button onClick={() => signOut()} variant="default" >
+                                SignOut
+                            </Button>}
                     </div>
 
                     <div className="md:hidden">

@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/app-sidebar"
 import Navbar from "@/components/Navbar";
+import AuthProvider from "@/context/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <AuthProvider>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SidebarProvider >
 
@@ -44,6 +46,7 @@ export default function RootLayout({
         </SidebarProvider>
 
       </body>
+      </AuthProvider>
     </html>
   );
 }

@@ -52,11 +52,21 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async jwt(args) {
-            console.log("🔹 JWT Callback Triggered ---------------------");
-            console.dir(args, { depth: null }); 
-            console.log("------------------------------------------------");
+            const { token, user, account, profile } = args
 
-            const { token, user } = args
+            if (account?.provider === "github") {
+                await dbConnect();
+                let dbUser = await UserModel.findOne({ email: profile?.email });
+
+                if (!dbUser) {
+                    dbUser = await UserModel.create({
+                        email: profile?.email,
+                        username: profile?.login || profile?.name?.replace(/\s+/g, "_").toLowerCase(),
+                        isVerified: true,
+                        password: "",
+                    });
+                }
+            }
 
             if (user) {
                 token._id = user._id?.toString()

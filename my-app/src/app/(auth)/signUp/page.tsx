@@ -18,6 +18,7 @@ import axios from 'axios'
 import { ApiResponse } from "@/types/ApiResponse"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
 
 function SignupPage() {
     const [username, setUsername] = useState('');
@@ -152,7 +153,7 @@ function SignupPage() {
                                 </div>
                             </div>
 
-                            <Button variant="outline" className="w-full shadow-md">
+                            <Button onClick={() => signIn("github")} variant="outline" className="w-full shadow-md">
                                 <Github /> Continue with GitHub
                             </Button>
 
