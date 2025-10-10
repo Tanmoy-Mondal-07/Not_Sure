@@ -54,17 +54,40 @@ export const authOptions: NextAuthOptions = {
         async jwt(args) {
             const { token, user, account, profile } = args
 
+            //github provider
             if (account?.provider === "github") {
                 await dbConnect();
+
+                const email = profile?.email
+                const username = profile?.login || profile?.name?.replace(/\s+/g, "_").toLowerCase()
+
                 let dbUser = await UserModel.findOne({ email: profile?.email });
 
                 if (!dbUser) {
                     dbUser = await UserModel.create({
-                        email: profile?.email,
-                        username: profile?.login || profile?.name?.replace(/\s+/g, "_").toLowerCase(),
+                        email,
+                        username,
                         isVerified: true,
                         password: "",
+                        accounts: [
+                            {
+                                provider: "github",
+                                providerAccountId: account.providerAccountId,
+                                access_token: account.access_token,
+                                token_type: account.token_type,
+                                scope: account.scope,
+                            },
+                        ],
                     });
+                } else {
+                    dbUser.accounts.push({
+                        provider: "github",
+                        providerAccountId: account.providerAccountId,
+                        access_token: account.access_token,
+                        token_type: account.token_type,
+                        scope: account.scope,
+                    });
+                    await dbUser.save();
                 }
             }
 
